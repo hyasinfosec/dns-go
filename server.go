@@ -57,6 +57,8 @@ type ResponseWriter interface {
 	// Hijack lets the caller take over the connection.
 	// After a call to Hijack(), the DNS package will not do anything with the connection.
 	Hijack()
+	// Returns the protocol of the request
+	Protocol() string
 }
 
 // A ConnectionStater interface is used by a DNS Handler to access TLS connection state
@@ -77,6 +79,7 @@ type response struct {
 	udpSession     *SessionUDP       // oob data to get egress interface right
 	pcSession      net.Addr          // address to use when writing to a generic net.PacketConn
 	writer         Writer            // writer to output the raw DNS bits
+	protocol       string            // protocol of the incoming request
 }
 
 // handleRefused returns a HandlerFunc that returns REFUSED for every request it gets.
@@ -194,6 +197,8 @@ type Server struct {
 	Addr string
 	// if "tcp" or "tcp-tls" (DNS over TLS) it will invoke a TCP listener, otherwise an UDP one
 	Net string
+	// Protocol of the incoming request ("udp", "tcp", or "tcp-tls")
+	Protocol string
 	// TCP Listener to use, this is to aid in systemd's socket activation.
 	Listener net.Listener
 	// TLS connection configuration
@@ -289,6 +294,8 @@ func (srv *Server) ListenAndServe() error {
 	}
 
 	srv.init()
+
+	srv.Protocol = srv.Net
 
 	switch srv.Net {
 	case "tcp", "tcp4", "tcp6":
@@ -526,7 +533,7 @@ func (srv *Server) serveUDP(l net.PacketConn) error {
 
 // Serve a new TCP connection.
 func (srv *Server) serveTCPConn(wg *sync.WaitGroup, rw net.Conn) {
-	w := &response{tsigSecret: srv.TsigSecret, tcp: rw}
+	w := &response{tsigSecret: srv.TsigSecret, tcp: rw, protocol: srv.Protocol}
 	if srv.DecorateWriter != nil {
 		w.writer = srv.DecorateWriter(w)
 	} else {
@@ -581,7 +588,7 @@ func (srv *Server) serveTCPConn(wg *sync.WaitGroup, rw net.Conn) {
 
 // Serve a new UDP request.
 func (srv *Server) serveUDPPacket(wg *sync.WaitGroup, m []byte, u net.PacketConn, udpSession *SessionUDP, pcSession net.Addr) {
-	w := &response{tsigSecret: srv.TsigSecret, udp: u, udpSession: udpSession, pcSession: pcSession}
+	w := &response{tsigSecret: srv.TsigSecret, udp: u, udpSession: udpSession, pcSession: pcSession, protocol: srv.Protocol}
 	if srv.DecorateWriter != nil {
 		w.writer = srv.DecorateWriter(w)
 	} else {
@@ -787,6 +794,9 @@ func (w *response) RemoteAddr() net.Addr {
 		panic("dns: internal error: udpSession, pcSession and tcp are all nil")
 	}
 }
+
+// Protocol implements the ResponseWriter.Protocol method.
+func (w *response) Protocol() string { return w.protocol }
 
 // TsigStatus implements the ResponseWriter.TsigStatus method.
 func (w *response) TsigStatus() error { return w.tsigStatus }
