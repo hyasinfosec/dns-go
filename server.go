@@ -59,6 +59,7 @@ type ResponseWriter interface {
 	Hijack()
 	// Returns the protocol of the request
 	Protocol() string
+	RequestTime() time.Time
 }
 
 // A ConnectionStater interface is used by a DNS Handler to access TLS connection state
@@ -80,6 +81,7 @@ type response struct {
 	pcSession      net.Addr          // address to use when writing to a generic net.PacketConn
 	writer         Writer            // writer to output the raw DNS bits
 	protocol       string            // protocol of the incoming request
+	requesttime    time.Time            // protocol of the incoming request
 }
 
 // handleRefused returns a HandlerFunc that returns REFUSED for every request it gets.
@@ -797,6 +799,7 @@ func (w *response) RemoteAddr() net.Addr {
 
 // Protocol implements the ResponseWriter.Protocol method.
 func (w *response) Protocol() string { return w.protocol }
+func (w *response) RequestTime() time.Time { return w.requesttime }
 
 // TsigStatus implements the ResponseWriter.TsigStatus method.
 func (w *response) TsigStatus() error { return w.tsigStatus }
