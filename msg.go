@@ -158,6 +158,31 @@ var RcodeToString = map[int]string{
 	RcodeBadCookie: "BADCOOKIE",
 }
 
+// RcodeToString maps Rcodes to strings.
+/*
+var StringToRcode = map[string]int{
+	"NOERROR":   RcodeSuccess,
+	"FORMERR":   RcodeFormatError,
+	"SERVFAIL":  RcodeServerFailure,
+	"NXDOMAIN":  RcodeNameError,
+	"NOTIMP":    RcodeNotImplemented,
+	"REFUSED":   RcodeRefused,
+	"YXDOMAIN":  RcodeYXDomain,
+	"YXRRSET":   RcodeYXRrset,
+	"NXRRSET":   RcodeNXRrset,
+	"NOTAUTH":   RcodeNotAuth,
+	"NOTZONE":   RcodeNotZone,
+	"BADSIG":    RcodeBadSig,
+	"BADKEY":    RcodeBadKey,
+	"BADTIME":   RcodeBadTime,
+	"BADMODE":   RcodeBadMode,
+	"BADNAME":   RcodeBadName,
+	"BADALG":    RcodeBadAlg,
+	"BADTRUNC":  RcodeBadTrunc,
+	"BADCOOKIE": RcodeBadCookie,
+}
+*/
+
 // compressionMap is used to allow a more efficient compression map
 // to be used for internal packDomainName calls without changing the
 // signature or functionality of public API.
