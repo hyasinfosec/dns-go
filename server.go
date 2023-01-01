@@ -64,6 +64,8 @@ type ResponseWriter interface {
 	ProcessName() string
 	ExtRcode() string
 	ExtResponseIps() []string
+	ClientId() string
+	DeviceId() string
 }
 
 // A ConnectionStater interface is used by a DNS Handler to access TLS connection state
@@ -90,6 +92,8 @@ type response struct {
 	processname    string            // name of the process making the request
 	extrcode    string            // name of the process making the request
 	extresponseips    []string            // name of the process making the request
+	clientId    string
+	deviceId    string
 }
 
 // handleRefused returns a HandlerFunc that returns REFUSED for every request it gets.
@@ -812,6 +816,8 @@ func (w *response) DeviceName() string { return w.devicename }
 func (w *response) ProcessName() string { return w.processname }
 func (w *response) ExtRcode() string { return w.extrcode }
 func (w *response) ExtResponseIps() []string { return w.extresponseips }
+func (w *response) ClientId() string { return w.clientId }
+func (w *response) DeviceId() string { return w.deviceId }
 
 // TsigStatus implements the ResponseWriter.TsigStatus method.
 func (w *response) TsigStatus() error { return w.tsigStatus }
