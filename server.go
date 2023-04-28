@@ -65,6 +65,7 @@ type ResponseWriter interface {
 	ExtRcode() string
 	ExtResponseIps() []string
 	ClientId() string
+	UserId() string
 	DeviceId() string
 }
 
@@ -93,6 +94,7 @@ type response struct {
 	extrcode    string            // name of the process making the request
 	extresponseips    []string            // name of the process making the request
 	clientId    string
+	userId      string
 	deviceId    string
 }
 
@@ -817,6 +819,7 @@ func (w *response) ProcessName() string { return w.processname }
 func (w *response) ExtRcode() string { return w.extrcode }
 func (w *response) ExtResponseIps() []string { return w.extresponseips }
 func (w *response) ClientId() string { return w.clientId }
+func (w *response) UserId() string { return w.userId }
 func (w *response) DeviceId() string { return w.deviceId }
 
 // TsigStatus implements the ResponseWriter.TsigStatus method.
