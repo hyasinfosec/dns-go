@@ -116,6 +116,7 @@ type Msg struct {
 
 	Categories []string
 	Verdict    string
+	Threats    []string
 }
 
 // ClassToString is a maps Classes to strings for each CLASS wire type.
